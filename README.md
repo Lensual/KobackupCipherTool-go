@@ -31,6 +31,8 @@ checkhash
 2024/10/10 00:33:49 Success
 ```
 
+decrypt
+
 ```sh
 ./decrypt \
   --password 12345678 \
