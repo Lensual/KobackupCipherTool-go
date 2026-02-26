@@ -9,8 +9,13 @@ A Go implementation of Kobackup backup file decryption tool. Used to parse and d
   - Supports parsing checkMsgV3 fields from `info.xml`
 
 - **decrypt**: Decrypt backup files
-  - Uses AES-256-CBC encryption algorithm
+  - Uses AES-256-GCM encryption algorithm
   - Supports parsing encMsgV3 fields from `info.xml`
+
+- **decrypt-dir**: Batch decrypt entire backup directory
+  - Automatically parses encryption parameters from `info.xml`
+  - Automatically extracts app package names from `backupinfo.ini`
+  - Recursively decrypts all `.tar` files in the directory
 
 ## Algorithm Details
 
@@ -59,23 +64,12 @@ Output example:
 
 ### decrypt - Decrypt Backup Files
 
-Supports both file and directory as input:
-- **When input is a file**: Requires `--output` parameter
-- **When input is a directory**: Automatically creates output directory by appending `_decrypted` to the input directory name, recursively decrypts all files inside
-
 ```sh
-# Decrypt a single file
 ./decrypt \
   --password 12345678 \
   --encMsgV3 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6 \
   --input ./com.tencent.mm0.tar \
   --output ./out
-
-# Decrypt a directory (automatically generates output_decrypted folder)
-./decrypt \
-  --password 12345678 \
-  --encMsgV3 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6 \
-  --input ./backup_files
 ```
 
 Output example:
@@ -86,12 +80,44 @@ Output example:
 2024/10/10 00:43:48 Success
 ```
 
+### decrypt-dir - Batch Decrypt Backup Directory
+
+Automatically parses encryption parameters from `info.xml` and package names from `backupinfo.ini` to decrypt the entire backup directory.
+
+```sh
+./decrypt-dir \
+  --password 12345678 \
+  --input ./backup_files
+```
+
+Output example:
+```
+2024/10/10 00:43:46 encMsgV3 from info.xml: 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6
+2024/10/10 00:43:46 encMsgV3.Salt: 0EA2404230F7D824B354FEEA5D5CEC6B24FE35303D4A9D9F687D0641AA5F19A3
+2024/10/10 00:43:46 encMsgV3.Iv: 226264AB0BA258E1DCA455D032D19DE6
+2024/10/10 00:43:46 key: 85C973940B15BA7B7FBC203025D86B38B888EDD0CD3577F16ECE24BFC951962D
+2024/10/10 00:43:46 Found package name: com.tencent.mm, targeting directory: ./backup_files/com.tencent.mm_appDataTar
+2024/10/10 00:43:48 Decrypting: ./backup_files/com.tencent.mm_appDataTar/xxx.tar -> ./backup_files_decrypted/com.tencent.mm_appDataTar/xxx.tar
+2024/10/10 00:43:48 Success: ./backup_files_decrypted/com.tencent.mm_appDataTar/xxx.tar
+2024/10/10 00:43:49 Folder decryption completed
+```
+
 ## Test Environment
+
+Success
 
 - backupVersion: 29
 - backupVersionName: 13.1.0.340
 - Device: HMA-AL00
-- Hisuite: 14.0.0.320_OVE
+- hisuiteversion: 14.0.0.320
+
+Failed
+
+- backupVersion: 29
+- backupVersionName: 14.5.0.375
+- Device: HMA-AL00
+- hisuiteversion: 14.0.0.340
+
 
 ## References
 
