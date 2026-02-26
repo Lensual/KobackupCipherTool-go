@@ -59,12 +59,23 @@ Output example:
 
 ### decrypt - Decrypt Backup Files
 
+Supports both file and directory as input:
+- **When input is a file**: Requires `--output` parameter
+- **When input is a directory**: Automatically creates output directory by appending `_decrypted` to the input directory name, recursively decrypts all files inside
+
 ```sh
+# Decrypt a single file
 ./decrypt \
   --password 12345678 \
   --encMsgV3 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6 \
   --input ./com.tencent.mm0.tar \
   --output ./out
+
+# Decrypt a directory (automatically generates output_decrypted folder)
+./decrypt \
+  --password 12345678 \
+  --encMsgV3 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6 \
+  --input ./backup_files
 ```
 
 Output example:

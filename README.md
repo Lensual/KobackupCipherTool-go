@@ -59,13 +59,23 @@ e56ac33a0eb3e97e501ded79eecc16496feb009a3ec46911186881f3dd73f3b7cec932efa6414914
 
 ### decrypt - 解密备份文件
 
+支持输入文件或文件夹：
+- **输入为文件时**：需要指定 `--output` 参数
+- **输入为文件夹时**：自动在输入文件夹名后添加 `_decrypted` 作为输出目录，会递归解密文件夹内所有文件
+
 ```sh
+# 解密单个文件
 ./decrypt \
   --password 12345678 \
   --encMsgV3 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6 \
   --input ./com.tencent.mm0.tar \
   --output ./out
-```
+
+# 解密文件夹（自动生成 output_decrypted 文件夹）
+./decrypt \
+  --password 12345678 \
+  --encMsgV3 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6 \
+  --input ./backup_files
 
 输出示例：
 ```
