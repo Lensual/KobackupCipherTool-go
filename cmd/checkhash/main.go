@@ -15,9 +15,9 @@ import (
 )
 
 func main() {
-	argPassword := flag.String("password", "", "")
-	argCheckMsgV3 := flag.String("checkMsgV3", "", "")
-	argInput := flag.String("input", "", "")
+	argPassword := flag.String("password", "", "Decryption password used to generate HMAC key")
+	argCheckMsgV3 := flag.String("checkMsgV3", "", "CheckMsgV3 string containing expected HMAC, salt and filename info")
+	argInput := flag.String("input", "", "Input file path to verify hash")
 	flag.Parse()
 
 	checkMsgV3Items, err := internal.ParseCheckMsgV3(*argCheckMsgV3)
