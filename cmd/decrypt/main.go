@@ -13,10 +13,10 @@ import (
 )
 
 func main() {
-	argPassword := flag.String("password", "", "")
-	argEncMsgV3 := flag.String("encMsgV3", "", "")
-	argInput := flag.String("input", "", "")
-	argOutput := flag.String("output", "", "")
+	argPassword := flag.String("password", "", "Decryption password used to generate AES key")
+	argEncMsgV3 := flag.String("encMsgV3", "", "EncMsgV3 string containing salt and IV information")
+	argInput := flag.String("input", "", "Input file or directory path (supports both file and directory modes)")
+	argOutput := flag.String("output", "", "Output file path (required when input is a file, auto-generates {input}_decrypted when input is a directory)")
 	flag.Parse()
 
 	// 32 bytes key is aes-256
