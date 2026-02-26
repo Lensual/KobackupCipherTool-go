@@ -9,8 +9,13 @@ Kobackup 备份文件解密工具，使用 Go 语言实现。用于解析和解�
   - 支持解析 `info.xml` 中的 checkMsgV3 字段
 
 - **decrypt**: 解密备份文件
-  - 使用 AES-256-CBC 加密算法
+  - 使用 AES-256-GCM 加密算法
   - 支持解析 `info.xml` 中的 encMsgV3 字段
+
+- **decrypt-dir**: 批量解密整个备份目录
+  - 自动从 `info.xml` 解析加密参数
+  - 自动从 `backupinfo.ini` 获取应用包名
+  - 递归解密目录下所有 `.tar` 文件
 
 ## 算法说明
 
@@ -59,23 +64,12 @@ e56ac33a0eb3e97e501ded79eecc16496feb009a3ec46911186881f3dd73f3b7cec932efa6414914
 
 ### decrypt - 解密备份文件
 
-支持输入文件或文件夹：
-- **输入为文件时**：需要指定 `--output` 参数
-- **输入为文件夹时**：自动在输入文件夹名后添加 `_decrypted` 作为输出目录，会递归解密文件夹内所有文件
-
 ```sh
-# 解密单个文件
 ./decrypt \
   --password 12345678 \
   --encMsgV3 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6 \
   --input ./com.tencent.mm0.tar \
   --output ./out
-
-# 解密文件夹（自动生成 output_decrypted 文件夹）
-./decrypt \
-  --password 12345678 \
-  --encMsgV3 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6 \
-  --input ./backup_files
 
 输出示例：
 ```
@@ -85,12 +79,42 @@ e56ac33a0eb3e97e501ded79eecc16496feb009a3ec46911186881f3dd73f3b7cec932efa6414914
 2024/10/10 00:43:48 Success
 ```
 
+### decrypt-dir - 批量解密备份目录
+
+自动从目录中的 `info.xml` 和 `backupinfo.ini` 解析加密参数和包名，解密整个备份目录。
+
+```sh
+./decrypt-dir \
+  --password 12345678 \
+  --input ./backup_files
+
+输出示例：
+```
+2024/10/10 00:43:46 encMsgV3 from info.xml: 0ea2404230f7d824b354feea5d5cec6b24fe35303d4a9d9f687d0641aa5f19a3226264ab0ba258e1dca455d032d19de6
+2024/10/10 00:43:46 encMsgV3.Salt: 0EA2404230F7D824B354FEEA5D5CEC6B24FE35303D4A9D9F687D0641AA5F19A3
+2024/10/10 00:43:46 encMsgV3.Iv: 226264AB0BA258E1DCA455D032D19DE6
+2024/10/10 00:43:46 key: 85C973940B15BA7B7FBC203025D86B38B888EDD0CD3577F16ECE24BFC951962D
+2024/10/10 00:43:46 Found package name: com.tencent.mm, targeting directory: ./backup_files/com.tencent.mm_appDataTar
+2024/10/10 00:43:48 Decrypting: ./backup_files/com.tencent.mm_appDataTar/xxx.tar -> ./backup_files_decrypted/com.tencent.mm_appDataTar/xxx.tar
+2024/10/10 00:43:48 Success: ./backup_files_decrypted/com.tencent.mm_appDataTar/xxx.tar
+2024/10/10 00:43:49 Folder decryption completed
+```
+
 ## 测试环境
+
+成功
 
 - backupVersion: 29
 - backupVersionName: 13.1.0.340
-- 设备: HMA-AL00
-- Hisuite: 14.0.0.320_OVE
+- Device: HMA-AL00
+- hisuiteversion: 14.0.0.320
+
+失败
+
+- backupVersion: 29
+- backupVersionName: 14.5.0.375
+- Device: HMA-AL00
+- hisuiteversion: 14.0.0.340
 
 ## 参考项目
 

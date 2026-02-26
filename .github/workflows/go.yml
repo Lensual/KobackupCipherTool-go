@@ -64,18 +64,20 @@ jobs:
       run: |
         go build -ldflags="-s -w" -o checkhash${{ matrix.ext }} ./cmd/checkhash
         go build -ldflags="-s -w" -o decrypt${{ matrix.ext }} ./cmd/decrypt
+        go build -ldflags="-s -w" -o decrypt-dir${{ matrix.ext }} ./cmd/decrypt-dir
 
     - name: Create zip package
       if: matrix.package == 'zip'
       run: |
-        zip -r kobackupcipher-${{ matrix.platform }}-${{ github.sha }}.zip checkhash${{ matrix.ext }} decrypt${{ matrix.ext }}
+        zip -r kobackupcipher-${{ matrix.platform }}-${{ github.sha }}.zip checkhash${{ matrix.ext }} decrypt${{ matrix.ext }} decrypt-dir${{ matrix.ext }}
 
     - name: Create tar.gz package
       if: matrix.package == 'tar.gz'
       run: |
         tar -czvf kobackupcipher-${{ matrix.platform }}-${{ github.sha }}.tar.gz \
           checkhash${{ matrix.ext }} \
-          decrypt${{ matrix.ext }}
+          decrypt${{ matrix.ext }} \
+          decrypt-dir${{ matrix.ext }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4

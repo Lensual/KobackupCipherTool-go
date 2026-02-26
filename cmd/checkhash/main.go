@@ -22,8 +22,7 @@ func main() {
 
 	checkMsgV3Items, err := internal.ParseCheckMsgV3(*argCheckMsgV3)
 	if err != nil {
-		log.Printf("ParseCheckMsgV3 Failed: %v", err)
-		os.Exit(1)
+		log.Fatalf("ParseCheckMsgV3 Failed: %v", err)
 	}
 
 	// find the input file in checkMsgV3
@@ -40,21 +39,19 @@ func main() {
 
 	inputFile, err := os.OpenFile(*argInput, os.O_RDONLY, 0)
 	if err != nil {
-		log.Printf("Input File can't open: %v", err)
-		os.Exit(1)
+		log.Fatalf("Input File can't open: %v", err)
 	}
 	defer inputFile.Close()
 
 	fileHash, err := hmacFile(*argPassword, checkMsgV3Item.Salt, inputFile)
 	if err != nil {
-		log.Printf("hmacFile Failed: %v", err)
-		os.Exit(1)
+		log.Fatalf("hmacFile Failed: %v", err)
 	}
 
 	log.Printf("File Hash: %X", fileHash)
 
 	if !hmac.Equal(fileHash, checkMsgV3Item.ExpectedHmac) {
-		log.Printf("Hash Dismatch: %v", err)
+		log.Fatalf("Hash Dismatch: %v", err)
 	}
 
 	log.Printf("Success")
